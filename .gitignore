@@ -1,0 +1,18 @@
+# Private environment credentials
+.env
+
+# Python caching
+__pycache__/
+*.pyc
+agent/__pycache__/
+rag/__pycache__/
+scraper/__pycache__/
+
+# Database caches and local storage
+chroma_storage/
+chroma_db/
+
+# Frontend dependencies and builds
+frontend/node_modules/
+package-lock.json
+frontend/package-lock.json

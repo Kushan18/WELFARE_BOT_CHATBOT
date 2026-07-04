@@ -1,0 +1,21 @@
+.bg-watermark{
+  position:fixed; top:50%; left:50%;
+  transform: translate(-50%,-50%);
+  font-family:'Sora', sans-serif;
+  font-weight:700;
+  font-size: clamp(60px, 11vw, 150px);
+  white-space:nowrap;
+  letter-spacing: 2px;
+  z-index:0;
+  pointer-events:none;
+  user-select:none;
+  color: rgba(255,255,255,0);
+  animation: watermarkGlow 3.4s ease-in-out forwards;
+}
+
+@keyframes watermarkGlow{
+  0%{   color: rgba(255,255,255,0); }
+  12%{  color: rgba(255,255,255,0.9); }
+  65%{  color: rgba(255,255,255,0.9); }
+  100%{ color: rgba(255,255,255,0.045); }
+}
