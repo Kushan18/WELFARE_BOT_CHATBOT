@@ -12,6 +12,13 @@ def get_mongodb_uri(uri: str = None) -> str:
     # Clean up accidental whitespace or quotes from env variables
     uri = uri.strip().strip("'").strip('"')
     
+    # Handle case where user accidentally pasted `MONGODB_URI=mongodb...` into the value field
+    idx = uri.find("mongodb")
+    if idx > 0:
+        uri = uri[idx:]
+        # Strip again in case of `MONGODB_URI="mongodb..."`
+        uri = uri.strip().strip("'").strip('"')
+        
     match = re.match(r"^(mongodb(?:\+srv)?://)(.*)@(.*)$", uri)
     if match:
         prefix, userpass, rest = match.groups()

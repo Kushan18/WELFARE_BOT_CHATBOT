@@ -55,21 +55,6 @@ MONGODB_URI = os.getenv("MONGODB_URI")
 if not MONGODB_URI:
     raise RuntimeError("MONGODB_URI environment variable not set")
 
-def escape_mongodb_uri(uri: str) -> str:
-    match = re.match(r"^(mongodb(?:\+srv)?://)(.*)@(.*)$", uri)
-    if match:
-        prefix, userpass, rest = match.groups()
-        if ":" in userpass:
-            user, pwd = userpass.split(":", 1)
-            user = quote_plus(unquote_plus(user))
-            pwd = quote_plus(unquote_plus(pwd))
-            return f"{prefix}{user}:{pwd}@{rest}"
-        else:
-            user = quote_plus(unquote_plus(userpass))
-            return f"{prefix}{user}@{rest}"
-    return uri
-
-MONGODB_URI = escape_mongodb_uri(MONGODB_URI)
 
 # Synchronous client for quick reads/writes
 sync_mongo_client = get_mongo_client(MONGODB_URI)
