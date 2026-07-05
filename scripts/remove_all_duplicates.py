@@ -1,6 +1,6 @@
+from db_utils import get_mongo_client
 import os
 import re
-from pymongo import MongoClient
 from dotenv import load_dotenv
 
 def _clean_name(name: str) -> str:
@@ -9,7 +9,7 @@ def _clean_name(name: str) -> str:
 
 def run_dedup():
     load_dotenv()
-    client = MongoClient(os.getenv("MONGODB_URI", "mongodb://127.0.0.1:27017"))
+    client = get_mongo_client(os.getenv("MONGODB_URI", "mongodb://127.0.0.1:27017"))
     db = client["welfarebot"]
     
     seen_names = set()

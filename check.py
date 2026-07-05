@@ -1,9 +1,9 @@
+from db_utils import get_mongo_client
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
 load_dotenv()
-client = MongoClient(os.getenv('MONGODB_URI'))
+client = get_mongo_client(os.getenv('MONGODB_URI'))
 db = client['welfarebot']
 query = {"$or": [{"verified": False}, {"verified": {"$exists": False}}]}
 print("unverified_query:", db.schemes.count_documents(query))

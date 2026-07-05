@@ -1,13 +1,13 @@
+from db_utils import get_mongo_client
 import os
 from datetime import datetime
-from pymongo import MongoClient
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://127.0.0.1:27017')
 
-client = MongoClient(MONGODB_URI)
+client = get_mongo_client(MONGODB_URI)
 _db = client["welfarebot"]
 raw_schemes = _db["raw_schemes"]
 schemes = _db["schemes"]

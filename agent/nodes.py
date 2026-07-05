@@ -1,3 +1,4 @@
+from db_utils import get_mongo_client
 import os
 import re
 import json
@@ -5,7 +6,6 @@ import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-from pymongo import MongoClient
 import motor.motor_asyncio
 from groq import Groq
 from dotenv import load_dotenv
@@ -30,9 +30,8 @@ conversations_collection = None
 
 # Set up MongoDB connection if running standalone
 if not groq_client:
-    from pymongo import MongoClient
     import motor.motor_asyncio
-    sync_mongo_client = MongoClient(MONGODB_URI)
+    sync_mongo_client = get_mongo_client(MONGODB_URI)
     async_mongo_client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URI)
     sync_users_collection = sync_mongo_client["welfarebot"]["users"]
     sync_schemes_collection = sync_mongo_client["welfarebot"]["schemes"]

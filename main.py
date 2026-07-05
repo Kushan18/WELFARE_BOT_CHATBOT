@@ -1,3 +1,4 @@
+from db_utils import get_mongo_client
 import sys
 import os
 import logging
@@ -46,7 +47,6 @@ async def verify_admin_key(api_key: str = Depends(api_key_header)):
     return api_key
 
 # MongoDB connections
-from pymongo import MongoClient
 import motor.motor_asyncio
 import re
 from urllib.parse import quote_plus, unquote_plus
@@ -72,7 +72,7 @@ def escape_mongodb_uri(uri: str) -> str:
 MONGODB_URI = escape_mongodb_uri(MONGODB_URI)
 
 # Synchronous client for quick reads/writes
-sync_mongo_client = MongoClient(MONGODB_URI)
+sync_mongo_client = get_mongo_client(MONGODB_URI)
 
 # Asynchronous client removed to fix event loop hanging issues completely
 

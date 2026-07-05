@@ -1,8 +1,8 @@
+from db_utils import get_mongo_client
 import logging
 import os
 import argparse
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -19,7 +19,7 @@ def main():
 
     if args.force:
         logging.info("Force flag detected: clearing staging collection before seeding")
-        client = MongoClient(os.getenv("MONGODB_URI"))
+        client = get_mongo_client(os.getenv("MONGODB_URI"))
         db = client["welfarebot"]
         db["staging"].delete_many({})
         client.close()
@@ -28,7 +28,7 @@ def main():
     logging.info("Starting WelfareBot scraper seed...")
     run_scraper()
 
-    client = MongoClient(os.getenv("MONGODB_URI"))
+    client = get_mongo_client(os.getenv("MONGODB_URI"))
     db = client["welfarebot"]
     count = db["staging"].count_documents({})
     logging.info(f"Total schemes in staging: {count}")

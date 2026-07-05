@@ -1,7 +1,7 @@
+from db_utils import get_mongo_client
 import logging
 import re
 import os
-from pymongo import MongoClient
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -36,7 +36,7 @@ def run_scraper():
     status = "success"
     error_message = None
     
-    client = MongoClient(os.getenv("MONGODB_URI"))
+    client = get_mongo_client(os.getenv("MONGODB_URI"))
     db = client["welfarebot"]
     staging = db["staging"]
     raw_schemes = db["raw_schemes"]

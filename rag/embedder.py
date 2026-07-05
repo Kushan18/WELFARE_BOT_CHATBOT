@@ -1,3 +1,4 @@
+from db_utils import get_mongo_client
 import os
 import pymongo
 from dotenv import load_dotenv
@@ -24,7 +25,7 @@ def build_chunk(scheme):
     return "\n".join(parts).strip()
 
 def run():
-    client = pymongo.MongoClient(os.getenv('MONGODB_URI'))
+    client = get_mongo_client(os.getenv('MONGODB_URI'))
     schemes = list(client['welfarebot']['schemes'].find())
     logger.info(f"loaded {len(schemes)} schemes")
     model = SentenceTransformer('all-MiniLM-L6-v2')

@@ -1,11 +1,11 @@
+from db_utils import get_mongo_client
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import pytest
 from fastapi.testclient import TestClient
 from main import app
-from pymongo import MongoClient
 
-client = MongoClient(os.getenv("MONGODB_URI"))
+client = get_mongo_client(os.getenv("MONGODB_URI"))
 _db = client["welfarebot"]
 raw_coll = _db["raw_schemes"]
 schemes_coll = _db["schemes"]

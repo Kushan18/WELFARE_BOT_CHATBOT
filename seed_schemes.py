@@ -1,13 +1,13 @@
+from db_utils import get_mongo_client
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
 load_dotenv()
 MONGODB_URI = os.getenv("MONGODB_URI")
 if not MONGODB_URI:
     raise RuntimeError("MONGODB_URI not set in .env")
 
-client = MongoClient(MONGODB_URI)
+client = get_mongo_client(MONGODB_URI)
 db = client["welfarebot"]
 schemes = db["schemes"]
 

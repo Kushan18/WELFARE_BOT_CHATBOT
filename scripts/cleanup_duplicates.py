@@ -1,6 +1,6 @@
+from db_utils import get_mongo_client
 import os
 import re
-from pymongo import MongoClient
 from dotenv import load_dotenv
 
 def _clean_name(name: str) -> str:
@@ -8,7 +8,7 @@ def _clean_name(name: str) -> str:
 
 def cleanup_duplicates():
     load_dotenv()
-    client = MongoClient(os.getenv("MONGODB_URI"))
+    client = get_mongo_client(os.getenv("MONGODB_URI"))
     db = client["welfarebot"]
     
     schemes_coll = db["schemes"]

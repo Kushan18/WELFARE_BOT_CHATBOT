@@ -1,3 +1,4 @@
+from db_utils import get_mongo_client
 import os
 import logging
 import httpx
@@ -5,7 +6,6 @@ import io
 import pandas as pd
 from scraper.base import make_scheme
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ def scrape():
     Returns list of scheme dicts matching our schema.
     """
     try:
-        client = MongoClient(os.getenv("MONGODB_URI"))
+        client = get_mongo_client(os.getenv("MONGODB_URI"))
         db = client["welfarebot"]
         count = db["staging"].count_documents({})
         client.close()

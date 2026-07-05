@@ -1,3 +1,4 @@
+from db_utils import get_mongo_client
 import logging
 from rag.live_retriever import live_retrieve
 from rag.cached_retriever import cached_retrieve
@@ -26,7 +27,7 @@ def get_schemes_db():
     if not _mongo_client:
         uri = os.getenv("MONGODB_URI")
         if uri:
-            _mongo_client = pymongo.MongoClient(uri)
+            _mongo_client = get_mongo_client(uri)
     if _mongo_client:
         return _mongo_client["welfarebot"]["schemes"]
     return None
