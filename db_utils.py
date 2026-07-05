@@ -8,6 +8,10 @@ def get_mongodb_uri(uri: str = None) -> str:
         uri = os.getenv("MONGODB_URI")
     if not uri:
         return uri
+    
+    # Clean up accidental whitespace or quotes from env variables
+    uri = uri.strip().strip("'").strip('"')
+    
     match = re.match(r"^(mongodb(?:\+srv)?://)(.*)@(.*)$", uri)
     if match:
         prefix, userpass, rest = match.groups()
