@@ -814,22 +814,7 @@ async def get_staging():
     return await cursor.to_list(length=100)
 
 
-# RAG endpoint – simple semantic search over stored schemes
-@app.post("/rag")
-def rag_query(query: dict):
-    """Accepts JSON {"question": "..."} and returns top matching scheme texts."""
-    question = query.get("question", "")
-    if not question:
-        raise HTTPException(status_code=400, detail="Question required")
 
-    try:
-        from chromadb import PersistentClient
-        chroma_client = PersistentClient(path="./chroma_storage")
-        collection = chroma_client.get_or_create_collection(name="welfare_schemes")
-        docs = collection.get(ids=collection.get().ids)
-        return {"matches": docs['documents'][:3]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 # Endpoint to manually trigger scraper
