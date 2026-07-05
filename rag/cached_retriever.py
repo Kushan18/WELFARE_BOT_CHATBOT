@@ -6,13 +6,18 @@ _collection = None
 
 def _load():
     global _model, _collection
-    if _model is None:
-        from sentence_transformers import SentenceTransformer
-        _model = SentenceTransformer('all-MiniLM-L6-v2')
+    import os
+    if not os.path.exists("./chroma_storage"):
+        raise RuntimeError("chroma_storage directory not found, skipping heavy ML model load.")
+        
     if _collection is None:
         import chromadb
         chroma = chromadb.PersistentClient(path="./chroma_storage")
         _collection = chroma.get_collection("welfare_schemes")
+        
+    if _model is None:
+        from sentence_transformers import SentenceTransformer
+        _model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def cached_retrieve(query, n=3):
     try:
