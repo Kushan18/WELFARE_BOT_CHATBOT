@@ -79,10 +79,10 @@ from scripts.enrich_raw import run_enrichment
 from scripts.auto_verify_complete import auto_verify_complete
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(run_scraper, "interval", days=3, id="scraper_job")
-scheduler.add_job(run_enrichment, "cron", hour=2, minute=0, id="enrich_job")
-scheduler.add_job(auto_verify_complete, "cron", hour=3, minute=0, id="auto_verify_job")
-scheduler.start()
+# scheduler.add_job(run_scraper, "interval", days=3, id="scraper_job")
+# scheduler.add_job(run_enrichment, "cron", hour=2, minute=0, id="enrich_job")
+# scheduler.add_job(auto_verify_complete, "cron", hour=3, minute=0, id="auto_verify_job")
+# scheduler.start()
 
 # FastAPI app instance
 app = FastAPI(title="WelfareBot Backend")
@@ -91,17 +91,8 @@ app.include_router(admin_router)
 @app.on_event("startup")
 async def startup_event():
     # Warm up SentenceTransformer model in a separate thread so it doesn't block startup
-    import threading
-    def warmup():
-        try:
-            logger.info("Warming up SentenceTransformer model...")
-            from rag.cached_retriever import cached_retrieve
-            cached_retrieve("warmup query", n=1)
-            logger.info("SentenceTransformer model warmed up successfully!")
-        except Exception as e:
-            logger.warning(f"Error warming up SentenceTransformer: {e}")
-            
-    threading.Thread(target=warmup, daemon=True).start()
+    # Disabled on Free Tier to prevent Out Of Memory (OOM) crashes
+    pass
 
 app.add_middleware(
     CORSMiddleware,
