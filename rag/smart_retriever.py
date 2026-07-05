@@ -16,43 +16,61 @@ def detect_state(query, user_state=None):
     if "central" in q or "pm " in q:
         return "central"
     return None
+import os
+import pymongo
+
+_mongo_client = None
+
+def get_schemes_db():
+    global _mongo_client
+    if not _mongo_client:
+        uri = os.getenv("MONGODB_URI")
+        if uri:
+            _mongo_client = pymongo.MongoClient(uri)
+    if _mongo_client:
+        return _mongo_client["welfarebot"]["schemes"]
+    return None
 
 def smart_retrieve(query, user_state=None):
-    """Retrieve scheme information.
-
-    1. Try cached retrieval (ChromaDB) for up to 3 matches.
-    2. For each cached result that includes an ``apply_link``, fetch fresh content
-       via ``live_retrieve``.
-    3. If live content is available, return it with source_type "live".
-    4. Otherwise fall back to the cached textual result with source_type "cached".
-    5. If nothing is found, return empty list and source_type "none".
-    """
-    state = detect_state(query, user_state)
-    logger.info(f"smart_retrieve: state={state}")
-
-    cached = cached_retrieve(query, n=3)
-    if cached:
-        logger.info(f"smart_retrieve: ChromaDB returned {len(cached)} results")
-        # cached is a list of documents (strings). In our embedding pipeline we store JSON‑serialised dicts.
-        for doc_str in cached:
-            try:
-                import json
-                doc = json.loads(doc_str)
-            except Exception:
-                continue
-            apply_link = doc.get("apply_link") or doc.get("application_link") or doc.get("official_link")
-            scheme_name = doc.get("name", "unknown scheme")
-            if apply_link:
-                live = live_retrieve(scheme_name, apply_link)
-                if live:
-                    return live, "live"
-        # No live data found – return the raw cached text snippets
-        return cached, "cached"
-
-    logger.warning("smart_retrieve: ChromaDB empty, falling back to live")
-    urls = STATE_SOURCE_MAP.get(state, ALL_SOURCES)
-    for url in urls:
-        live = live_retrieve(query, url)
-        if live:
-            return live, "live"
+    """Retrieve scheme information lightning-fast from MongoDB."""
+    logger.info(f"smart_retrieve (MongoDB optimized): query={query}")
+    try:
+        db = get_schemes_db()
+        if db is None:
+            return [], "none"
+            
+        import re
+        import json
+        
+        words = [w for w in query.split() if len(w) > 3]
+        if not words:
+            words = [query]
+            
+        pattern = "|".join([re.escape(w) for w in words])
+        
+        results = db.find({
+            "$or": [
+                {"name": {"$regex": pattern, "$options": "i"}},
+                {"description": {"$regex": pattern, "$options": "i"}},
+                {"benefits": {"$regex": pattern, "$options": "i"}}
+            ]
+        }).limit(3)
+        
+        docs = []
+        for doc in results:
+            docs.append(json.dumps({
+                "name": doc.get("name", ""),
+                "description": doc.get("description", ""),
+                "benefits": doc.get("benefits", ""),
+                "eligibility": doc.get("eligibility", ""),
+                "application_process": doc.get("application_process", ""),
+                "apply_link": doc.get("application_link", "")
+            }))
+            
+        if docs:
+            return docs, "mongo"
+            
+    except Exception as e:
+        logger.error(f"mongo_retrieve error: {e}")
+        
     return [], "none"
